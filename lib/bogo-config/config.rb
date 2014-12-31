@@ -2,6 +2,7 @@ require 'yaml'
 require 'multi_xml'
 require 'multi_json'
 require 'attribute_struct'
+require 'forwardable'
 
 require 'bogo-config'
 
@@ -10,6 +11,7 @@ module Bogo
   class Config
 
     include Bogo::Lazy
+    extend Forwardable
 
     # @return [String] configuration path
     attr_reader :path
@@ -20,12 +22,17 @@ module Bogo
     # @return [self]
     def initialize(path_or_hash=nil)
       if(path_or_hash.is_a?(String))
-        super
-      else
         @path = path
-        load! if path
+        hash = load!
+      else
+        hash = path_or_hash
       end
+      load_data(hash)
+      data.replace(hash.to_smash.deep_merge(data))
     end
+
+    # Allow Smash like behavior
+    def_delegators *([:data, :[]] + Smash.public_instance_methods(false))
 
     # Load configuration from file(s)
     #
@@ -41,13 +48,8 @@ module Bogo
         else
           raise Errno::ENOENT.new path
         end
-        data.replace(
-          self.class.new(
-            conf
-          ).data
-        )
+        conf
       end
-      self
     end
 
     # Load configuration file
