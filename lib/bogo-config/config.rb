@@ -14,7 +14,7 @@ module Bogo
     extend Forwardable
 
     # @return [String] configuration path
-    attr_reader :path
+    attr_accessor :path
 
     # Create new instance
     #
@@ -22,13 +22,15 @@ module Bogo
     # @return [self]
     def initialize(path_or_hash=nil)
       if(path_or_hash.is_a?(String))
-        @path = path
+        @path = path_or_hash
         hash = load!
       else
         hash = path_or_hash
       end
-      load_data(hash)
-      data.replace(hash.to_smash.deep_merge(data))
+      if(hash)
+        load_data(hash)
+        data.replace(hash.to_smash.deep_merge(data))
+      end
     end
 
     # Allow Smash like behavior
@@ -40,7 +42,7 @@ module Bogo
     def load!
       if(path)
         if(File.directory?(path))
-          conf = Dir.glob(File.join(path, '*')).inject(Smash.new) do |memo, file_path|
+          conf = Dir.glob(File.join(path, '*')).sort.inject(Smash.new) do |memo, file_path|
             memo.deep_merge(load_file(file_path))
           end
         elsif(File.file?(path))
@@ -64,14 +66,19 @@ module Bogo
         json_load(file_path)
       when '.xml'
         xml_load(file_path)
+      when '.rb'
+        struct_load(file_path)
       else
-        result = [:struct_load, :json_load, :yaml_load, :xml_load].detect do |loader|
+        result = [:struct_load, :json_load, :yaml_load, :xml_load].map do |loader|
           begin
             send(loader, file_path)
           rescue => e
+            if(ENV['DEBUG'])
+              $stderr.puts "#{e.class}: #{e}\n#{e.backtrace.join("\n")}"
+            end
             nil
           end
-        end
+        end.compact.first
         unless(result)
           raise "Failed to load configuration from file (#{file_path})"
         end
@@ -109,7 +116,7 @@ module Bogo
     # @param file_path
     # @return [Smash]
     def struct_load(file_path)
-      result = BasicObject.new.instance_eval(
+      result = Module.new.instance_eval(
         IO.read(file_path), file_path, 1
       )
       result._dump.to_smash
