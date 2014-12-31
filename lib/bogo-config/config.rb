@@ -10,27 +10,116 @@ module Bogo
 
   class Config
 
+    class << self
+
+      include Bogo::Memoization
+
+      # Reload any registered `Bogo::Config` instances
+      #
+      # @return [TrueClass]
+      def reload!
+        obj_ids = memoize(:bogo_reloadable_configs, :global)
+        objects = Thread.exclusive do
+          ObjectSpace.each_object.find_all do |obj|
+            obj_ids.include?(obj.object_id)
+          end
+        end
+        objects.map(&:init!)
+        memoize(:bogo_reloadable_configs, :global).delete_if do |oid|
+          !obj_ids.include?(oid)
+        end
+        true
+      end
+
+      # Register config instance to auto reload on HUP
+      #
+      # @param config [Bogo::Config]
+      # @return [TrueClass]
+      def reloadable(config)
+        if(config.is_a?(Bogo::Config))
+          reloader
+          memoize(:bogo_reloadable_configs, :global){ [] }.push(config.object_id).uniq!
+        else
+          raise TypeError.new "Expecting type `Bogo::Config`. Received: `#{config.class}`"
+        end
+        true
+      end
+
+      # Internal reloader
+      #
+      # @return [Thread]
+      def reloader
+        memoize(:bogo_config_reloader, :global) do
+          Thread.new do
+            begin
+              loop do
+                begin
+                  sleep
+                rescue SignalException => e
+                  if(e.signm == 'SIGHUP')
+                    if(ENV['DEBUG'])
+                      $stdout.puts 'SIGHUP encountered. Reloading `Bogo::Config` instances.'
+                    end
+                    Bogo::Config.reload!
+                  else
+                    raise
+                  end
+                end
+              end
+            rescue => e
+              if(ENV['DEBUG'])
+                $stderr.puts "#{e.class}: #{e}\n#{e.backtrace.join("\n")}"
+              end
+              retry
+            end
+          end
+        end
+      end
+
+    end
+
     include Bogo::Lazy
     extend Forwardable
 
     # @return [String] configuration path
-    attr_accessor :path
+    attr_reader :path
+    # @return [String, Hash]
+    attr_reader :initial
 
     # Create new instance
     #
     # @param path_or_hash [String, Hash] file/directory path or base Hash
     # @return [self]
     def initialize(path_or_hash=nil)
-      if(path_or_hash.is_a?(String))
-        @path = path_or_hash
+      @initial = path_or_hash
+      init!
+    end
+
+    # Enables automatic reloading on SIGHUP
+    #
+    # @return [TrueClass]
+    def reloadable!
+      Bogo::Config.reloadable(self)
+      true
+    end
+
+    # Intialize the configuration
+    #
+    # @return [self]
+    def init!
+      if(initial.is_a?(String))
+        @path = initial.dup
         hash = load!
       else
         hash = path_or_hash
       end
       if(hash)
-        load_data(hash)
-        data.replace(hash.to_smash.deep_merge(data))
+        Thread.exclusive do
+          load_data(hash)
+          data.replace(hash.to_smash.deep_merge(data))
+        end
       end
+      self
     end
 
     # Allow Smash like behavior
