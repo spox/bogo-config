@@ -108,7 +108,42 @@ module Bogo
     # @return [Smash]
     # @note supar ENTERPRISE
     def xml_load(file_path)
-      MultiXml.parse(File.read(file_path)).to_smash
+      result = MultiXml.parse(File.read(file_path)).to_smash[:configuration]
+      xml_format(result)
+    end
+
+    # Format XML types
+    #
+    # @param result [Smash]
+    # @return [Smash]
+    def xml_format(result)
+      Smash[result.map{|k,v| [k, xml_format_value(v)]}]
+    end
+
+    # Format XML value types
+    #
+    # @param value [Object]
+    # @return [Object]
+    def xml_format_value(value)
+      case value
+      when Hash
+        xml_format(value)
+      when Array
+        value.map{|v| xml_format_value(v)}
+      else
+        value.strip!
+        if(value == 'true')
+          true
+        elsif(value == 'false')
+          false
+        elsif(value.to_i.to_s == value)
+          value.to_i
+        elsif(value.to_f.to_s == value)
+          value.to_f
+        else
+          value
+        end
+      end
     end
 
     # Read and parse AttributeStruct file
