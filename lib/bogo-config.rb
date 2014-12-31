@@ -1,6 +1,3 @@
-require 'bogo-config/version'
 require 'bogo'
-
-module Bogo
-  autoload :Config, 'bogo-config/config'
-end
+require 'bogo-config/config'
+require 'bogo-config/version'
