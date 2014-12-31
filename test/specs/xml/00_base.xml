@@ -1,0 +1,15 @@
+<configuration>
+  <base>
+    <fubar>
+      <feebar>
+        true
+      </feebar>
+    </fubar>
+    <bang>
+      boom
+    </bang>
+    <blam>
+      3
+    </blam>
+  </base>
+</configuration>

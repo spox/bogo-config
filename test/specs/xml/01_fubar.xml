@@ -1,0 +1,10 @@
+<configuration>
+  <fubar>
+    hi
+  </fubar>
+  <base>
+    <blam>
+      false
+    </blam>
+  </base>
+</configuration>

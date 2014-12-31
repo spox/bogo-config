@@ -1,0 +1,12 @@
+<configuration>
+  <last_file>
+    true
+  </last_file>
+  <base>
+    <fubar>
+      <complete>
+        3.0
+      </complete>
+    </fubar>
+  </base>
+</configuration>
