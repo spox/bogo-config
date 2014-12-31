@@ -21,6 +21,10 @@ describe Bogo::Config do
 
   let(:config){ @config }
 
+  it 'should allow unconfigured config' do
+    Bogo::Config.new.path.must_equal nil
+  end
+
   it 'should have customized name' do
     config.name.must_equal 'custom config'
   end

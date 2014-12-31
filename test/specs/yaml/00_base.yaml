@@ -1,0 +1,6 @@
+---
+base:
+  fubar:
+    feebar: true
+  bang: boom
+  blam: 3
