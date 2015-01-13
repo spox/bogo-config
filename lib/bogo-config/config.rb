@@ -92,6 +92,7 @@ module Bogo
     # @return [self]
     def initialize(path_or_hash=nil)
       @initial = path_or_hash
+      @data = Smash.new
       init!
     end
 
@@ -111,7 +112,7 @@ module Bogo
         @path = initial.dup
         hash = load!
       else
-        hash = path_or_hash
+        hash = initial
       end
       if(hash)
         Thread.exclusive do
@@ -123,7 +124,7 @@ module Bogo
     end
 
     # Allow Smash like behavior
-    def_delegators *([:data, :[]] + Smash.public_instance_methods(false))
+    def_delegators *([:data, :[]] + (Smash.public_instance_methods - Object.public_instance_methods))
 
     # Load configuration from file(s)
     #
