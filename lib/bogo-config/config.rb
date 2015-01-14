@@ -126,6 +126,14 @@ module Bogo
     # Allow Smash like behavior
     def_delegators *([:data, :[]] + (Smash.public_instance_methods - Object.public_instance_methods))
 
+    # Override to force consistent data access (removes dirty
+    # functionality)
+    #
+    # @return [Smash]
+    def dirty
+      data
+    end
+
     # Load configuration from file(s)
     #
     # @return [self]
