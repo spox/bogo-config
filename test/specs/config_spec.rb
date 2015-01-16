@@ -54,4 +54,11 @@ describe Bogo::Config do
     my_conf.fetch(:a, :c, :x, 4).must_equal 4
   end
 
+  it 'should allow option immutable' do
+    my_conf = Bogo::Config.new(:a => 1, :b => 2, :c => {:d => {:e => 3}})
+    my_conf.immutable!
+    my_conf[:a].must_be :frozen?
+    my_conf[:c][:d].must_be :frozen?
+  end
+
 end
