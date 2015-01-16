@@ -104,6 +104,13 @@ module Bogo
       true
     end
 
+    # Freeze underlying configuration data
+    #
+    # @return [self]
+    def immutable!
+      @data = data.to_smash(:freeze)
+    end
+
     # Intialize the configuration
     #
     # @return [self]
@@ -115,9 +122,11 @@ module Bogo
         hash = initial
       end
       if(hash)
+        is_immutable = data.frozen?
         Thread.exclusive do
           load_data(hash)
-          data.replace(hash.to_smash.deep_merge(data))
+          @data = hash.to_smash.deep_merge(data.to_smash)
+          @data.to_smash(:freeze) if is_immutable
         end
       end
       self
