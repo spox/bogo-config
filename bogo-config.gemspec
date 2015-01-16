@@ -10,7 +10,7 @@ Gem::Specification.new do |s|
   s.description = 'Configuration helper library'
   s.require_path = 'lib'
   s.license = 'Apache 2.0'
-  s.add_dependency 'bogo'
+  s.add_dependency 'bogo', '>= 0.1.4', '< 1.0'
   s.add_dependency 'multi_json'
   s.add_dependency 'multi_xml'
   s.add_dependency 'attribute_struct'
