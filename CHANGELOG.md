@@ -1,3 +1,7 @@
+## v0.1.6
+* Remove dirty functionality to retain consistent data access
+* Allow setting configuration as immutable
+
 ## v0.1.4
 * Delegate more methods from config instance to underlying data instance
 * Add initial support for auto reloading configuration
