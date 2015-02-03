@@ -143,6 +143,11 @@ module Bogo
       data
     end
 
+    # @return [String]
+    def to_json(*args)
+      MultiJson.dump(data, *args)
+    end
+
     # Load configuration from file(s)
     #
     # @return [self]
