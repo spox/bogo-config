@@ -1,3 +1,6 @@
+## v0.1.8
+* Support JSON serialization of configurations
+
 ## v0.1.6
 * Remove dirty functionality to retain consistent data access
 * Allow setting configuration as immutable
