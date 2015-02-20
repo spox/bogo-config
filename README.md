@@ -79,7 +79,7 @@ JSON example could also be written as:
 
 ```ruby
 # /tmp/bogo-config.rb
-Configuration do
+Configuration.new do
   bind do
     address '0.0.0.0'
     port 8080
