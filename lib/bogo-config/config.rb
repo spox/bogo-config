@@ -184,7 +184,7 @@ module Bogo
         result = [:struct_load, :json_load, :yaml_load, :xml_load].map do |loader|
           begin
             send(loader, file_path)
-          rescue => e
+          rescue StandardError, ScriptError => e
             if(ENV['DEBUG'])
               $stderr.puts "#{e.class}: #{e}\n#{e.backtrace.join("\n")}"
             end
