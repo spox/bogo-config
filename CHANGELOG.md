@@ -1,3 +1,6 @@
+## v0.1.10
+* Gracefully handle failures of ruby files (rescue parse errors)
+
 ## v0.1.8
 * Support JSON serialization of configurations
 
