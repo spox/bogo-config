@@ -123,5 +123,16 @@ The path provided on initialization can also be a directory.
 The contents of the directory will be read in string sorted
 order and deep merged. Files can be a mix of supported types.
 
+### Ruby evaluation
+
+Ruby evaluation is super awesome, except when you don't want
+it and then it's not super awesome. If a running process needs
+to disable Ruby based evaluation (a service perhaps), this
+can be done with an environment variable:
+
+```
+export BOGO_CONFIG_DISABLE_EVAL=true
+```
+
 ## Info
 * Repository: https://github.com/spox/bogo-config

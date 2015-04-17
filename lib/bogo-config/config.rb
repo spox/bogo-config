@@ -178,7 +178,7 @@ module Bogo
         json_load(file_path)
       when '.xml'
         xml_load(file_path)
-      when '.rb'
+      when '.rb' && eval_enabled?
         struct_load(file_path)
       else
         result = [:struct_load, :json_load, :yaml_load, :xml_load].map do |loader|
@@ -263,10 +263,24 @@ module Bogo
     # @param file_path
     # @return [Smash]
     def struct_load(file_path)
-      result = Module.new.instance_eval(
-        IO.read(file_path), file_path, 1
-      )
-      result._dump.to_smash
+      if(eval_disabled?)
+        raise 'Ruby based configuration evaluation is currently disabled!'
+      else
+        result = Module.new.instance_eval(
+          IO.read(file_path), file_path, 1
+        )
+        result._dump.to_smash
+      end
+    end
+
+    # @return [TrueClass, FalseClass]
+    def eval_enabled?
+      ENV['BOGO_CONFIG_DISABLE_EVAL'].to_s.downcase != 'true'
+    end
+
+    # @return [TrueClass, FalseClass]
+    def eval_disabled?
+      !eval_enabled?
     end
 
   end
