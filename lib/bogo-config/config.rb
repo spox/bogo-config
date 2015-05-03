@@ -123,11 +123,10 @@ module Bogo
       end
       if(hash)
         is_immutable = data.frozen?
-        Thread.exclusive do
-          load_data(hash)
-          @data = hash.to_smash.deep_merge(data.to_smash)
-          @data.to_smash(:freeze) if is_immutable
-        end
+        # TODO: synchronize here
+        load_data(hash)
+        @data = hash.to_smash.deep_merge(data.to_smash)
+        @data.to_smash(:freeze) if is_immutable
       end
       self
     end
