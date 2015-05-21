@@ -1,3 +1,7 @@
+## v0.1.12
+* Allow Ruby config disable via environment variable
+* Remove exclusive use during init
+
 ## v0.1.10
 * Gracefully handle failures of ruby files (rescue parse errors)
 
