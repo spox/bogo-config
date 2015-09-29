@@ -57,7 +57,7 @@ module Bogo
                   sleep
                 rescue SignalException => e
                   if(e.signm == 'SIGHUP')
-                    if(ENV['DEBUG'])
+                    if(ENV['BOGO_DEBUG'])
                       $stdout.puts 'SIGHUP encountered. Reloading `Bogo::Config` instances.'
                     end
                     Bogo::Config.reload!
@@ -67,7 +67,7 @@ module Bogo
                 end
               end
             rescue => e
-              if(ENV['DEBUG'])
+              if(ENV['BOGO_DEBUG'])
                 $stderr.puts "#{e.class}: #{e}\n#{e.backtrace.join("\n")}"
               end
               retry
@@ -184,7 +184,7 @@ module Bogo
           begin
             send(loader, file_path)
           rescue StandardError, ScriptError => e
-            if(ENV['DEBUG'])
+            if(ENV['BOGO_DEBUG'])
               $stderr.puts "#{e.class}: #{e}\n#{e.backtrace.join("\n")}"
             end
             nil
