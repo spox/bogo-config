@@ -1,3 +1,6 @@
+## v0.1.14
+* Update debug environment variable name
+
 ## v0.1.12
 * Allow Ruby config disable via environment variable
 * Remove exclusive use during init
