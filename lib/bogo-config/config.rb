@@ -186,7 +186,7 @@ module Bogo
           begin
             result = send(loader, file_path)
             break
-          rescue MultiJson::ParseError, StandardError, ScriptError => e
+          rescue StandardError, ScriptError => e
             if(ENV['BOGO_DEBUG'])
               $stderr.puts "#{e.class}: #{e}\n#{e.backtrace.join("\n")}"
             end
