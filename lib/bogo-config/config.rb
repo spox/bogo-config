@@ -180,19 +180,23 @@ module Bogo
       when '.rb' && eval_enabled?
         struct_load(file_path)
       else
-        result = [:struct_load, :json_load, :yaml_load, :xml_load].map do |loader|
+        result = nil
+
+        [:struct_load, :json_load, :yaml_load, :xml_load].each do |loader|
           begin
-            send(loader, file_path)
-          rescue StandardError, ScriptError => e
+            result = send(loader, file_path)
+            break
+          rescue MultiJson::ParseError, StandardError, ScriptError => e
             if(ENV['BOGO_DEBUG'])
               $stderr.puts "#{e.class}: #{e}\n#{e.backtrace.join("\n")}"
             end
-            nil
           end
-        end.compact.first
+        end
+
         unless(result)
           raise "Failed to load configuration from file (#{file_path})"
         end
+
         result
       end
     end
