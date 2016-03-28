@@ -10,6 +10,24 @@ module Bogo
 
   class Config
 
+    # Exception wrapper class used for configuration file load failure
+    class FileLoadError < LoadError
+
+      # @return [Exception]
+      attr_reader :original
+
+      def initialize(message, original_exception = nil)
+        super(message)
+        @original = original_exception
+      end
+
+      # @return [Fixnum]
+      def exit_code
+        222
+      end
+
+    end
+
     class << self
 
       include Bogo::Memoization
@@ -170,35 +188,42 @@ module Bogo
     # @param file_path [String] path to file
     # @return [Smash]
     def load_file(file_path)
-      case File.extname(file_path)
-      when '.yaml', '.yml'
-        yaml_load(file_path)
-      when '.json'
-        json_load(file_path)
-      when '.xml'
-        xml_load(file_path)
-      when '.rb' && eval_enabled?
-        struct_load(file_path)
-      else
-        result = nil
-
-        [:struct_load, :json_load, :yaml_load, :xml_load].each do |loader|
-          begin
-            result = send(loader, file_path)
-            break
-          rescue StandardError, ScriptError => e
-            if(ENV['BOGO_DEBUG'])
-              $stderr.puts "#{e.class}: #{e}\n#{e.backtrace.join("\n")}"
-            end
-          end
-        end
-
-        unless(result)
-          raise "Failed to load configuration from file (#{file_path})"
-        end
-
-        result
+      result = nil
+      errors = Smash.new
+      error = nil
+      begin
+        result = case File.extname(file_path)
+                 when '.yaml', '.yml'
+                   yaml_load(file_path)
+                 when '.json'
+                   json_load(file_path)
+                 when '.xml'
+                   xml_load(file_path)
+                 when '.rb' && eval_enabled?
+                   struct_load(file_path)
+                 else
+                   [:struct_load, :json_load, :yaml_load, :xml_load].each do |loader|
+                     begin
+                       result = send(loader, file_path)
+                       break
+                     rescue StandardError, ScriptError => e
+                       errors[loader] = e
+                       if(ENV['BOGO_DEBUG'])
+                         $stderr.puts "#{e.class}: #{e}\n#{e.backtrace.join("\n")}"
+                       end
+                     end
+                   end
+                   result
+                 end
+      rescue => error
       end
+      unless(result)
+        raise FileLoadError.new(
+          "Failed to load configuration from file (#{file_path})",
+          error || extract_error_for(file_path, errors)
+        )
+      end
+      result
     end
 
     # Read and parse YAML file
@@ -284,6 +309,24 @@ module Bogo
     # @return [TrueClass, FalseClass]
     def eval_disabled?
       !eval_enabled?
+    end
+
+    # Extract appropriate execption based on path
+    #
+    # @param path [String]
+    # @param errors [Hash]
+    # @return [Exception, NilClass]
+    def extract_error_for(path, errors)
+      content = File.read(path).strip
+      if(content.start_with?('{'))
+        errors[:json_load]
+      elsif(content.start_with?('<'))
+        errors[:xml_load]
+      elsif(content.match(/\.new\s*(do|\{)/))
+        errors[:struct_load]
+      else
+        errors[:yaml_load]
+      end
     end
 
   end

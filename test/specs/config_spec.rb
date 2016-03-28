@@ -1,4 +1,4 @@
-require 'minitest/autorun'
+require_relative '../spec'
 
 class MyConfig < Bogo::Config
   attribute :name, String, :default => 'the config'
