@@ -1,3 +1,6 @@
+# v0.2.2
+* Fix explicit struct load conditional for .rb files (#5)
+
 # v0.2.0
 * Stop configuration detection after successful load
 * Use custom exception type for config load failures
