@@ -2,15 +2,27 @@ require_relative '../spec'
 
 describe Bogo::Config do
 
+  def with_env(k,v)
+    old, ENV[k] = ENV[k], v
+    yield
+  ensure
+    ENV[k] = old
+  end
+
   let(:config_dir){ File.join(File.dirname(__FILE__), 'fail') }
+
+  it 'should refuse to eval ruby code when BOGO_CONFIG_DISABLE_EVAL is set' do
+    e = with_env 'BOGO_CONFIG_DISABLE_EVAL', 'true' do
+      assert_raises Bogo::Config::FileLoadError do
+        Bogo::Config.new(File.join(config_dir, 'config-ruby'))
+      end
+    end
+    e.original.message.must_equal "Ruby based configuration evaluation is currently disabled!"
+  end
 
   describe 'File load failure' do
 
-    before do
-      @config_path = File.join(config_dir, 'config.json')
-    end
-
-    let(:config_path){ @config_path }
+    let(:config_path){ File.join(config_dir, 'config.json') }
 
     it 'should generate a custom exception on load failure' do
       ->{
@@ -26,6 +38,12 @@ describe Bogo::Config do
       end
       error.must_be_kind_of Bogo::Config::FileLoadError
       error.original.must_be_kind_of Exception
+    end
+
+    it 'should provide customer errors for ruby' do
+      assert_raises SyntaxError do
+        Bogo::Config.new(File.join(config_dir, 'config.rb'))
+      end
     end
 
   end

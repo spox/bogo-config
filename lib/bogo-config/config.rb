@@ -199,7 +199,7 @@ module Bogo
                    json_load(file_path)
                  when '.xml'
                    xml_load(file_path)
-                 when '.rb' && eval_enabled?
+                 when '.rb'
                    struct_load(file_path)
                  else
                    [:struct_load, :json_load, :yaml_load, :xml_load].each do |loader|
