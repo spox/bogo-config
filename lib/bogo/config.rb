@@ -111,6 +111,7 @@ module Bogo
     # @param path_or_hash [String, Hash] file/directory path or base Hash
     # @return [self]
     def initialize(path_or_hash=nil)
+      super()
       @initial = path_or_hash
       @data = Smash.new
       init!
