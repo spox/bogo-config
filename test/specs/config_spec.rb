@@ -51,7 +51,7 @@ describe Bogo::Config do
     my_conf[:a].must_equal 1
     my_conf.get(:b).must_equal 2
     my_conf.get(:c, :d, :e).must_equal 3
-    my_conf.fetch(:a, :c, :x, 4).must_equal 4
+    my_conf.fetch(:z, :c, :x, 4).must_equal 4
   end
 
   it 'should allow option immutable' do
