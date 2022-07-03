@@ -1,3 +1,6 @@
+# v0.3.0
+* Update path layouts
+
 # v0.2.2
 * Fix explicit struct load conditional for .rb files (#5)
 
