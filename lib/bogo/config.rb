@@ -153,7 +153,7 @@ module Bogo
     end
 
     # Allow Smash like behavior
-    def_delegators *([:data, :[]] + (Smash.public_instance_methods - Object.public_instance_methods))
+    def_delegators(*([:data] + (Smash.public_instance_methods - Object.public_instance_methods)))
 
     # Override to force consistent data access (removes dirty
     # functionality)
