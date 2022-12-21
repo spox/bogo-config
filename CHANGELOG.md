@@ -1,4 +1,5 @@
 # v0.3.1
+* Removing redefinition warning (#7)
 
 # v0.3.0
 * Update path layouts
