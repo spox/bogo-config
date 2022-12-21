@@ -1,7 +1,6 @@
 require_relative '../spec'
 
 describe Bogo::Config do
-
   def with_env(k,v)
     old, ENV[k] = ENV[k], v
     yield
@@ -17,15 +16,14 @@ describe Bogo::Config do
         Bogo::Config.new(File.join(config_dir, 'config-ruby'))
       end
     end
-    e.original.message.must_equal "Ruby based configuration evaluation is currently disabled!"
+    _(e.original.message).must_equal "Ruby based configuration evaluation is currently disabled!"
   end
 
   describe 'File load failure' do
-
     let(:config_path){ File.join(config_dir, 'config.json') }
 
     it 'should generate a custom exception on load failure' do
-      ->{
+      _{
         Bogo::Config.new(config_path)
       }.must_raise Bogo::Config::FileLoadError
     end
@@ -36,8 +34,8 @@ describe Bogo::Config do
         Bogo::Config.new(config_path)
       rescue Bogo::Config::FileLoadError => error
       end
-      error.must_be_kind_of Bogo::Config::FileLoadError
-      error.original.must_be_kind_of Exception
+      _(error).must_be_kind_of Bogo::Config::FileLoadError
+      _(error.original).must_be_kind_of Exception
     end
 
     it 'should provide customer errors for ruby' do
@@ -45,18 +43,16 @@ describe Bogo::Config do
         Bogo::Config.new(File.join(config_dir, 'config.rb'))
       end
     end
-
   end
 
   describe 'Extensionless load error' do
-
     it 'should provide ruby exception on ruby file' do
       error = nil
       begin
         Bogo::Config.new(File.join(config_dir, 'config-ruby'))
       rescue Bogo::Config::FileLoadError => error
       end
-      error.original.must_be_kind_of SyntaxError
+      _(error.original).must_be_kind_of SyntaxError
     end
 
     it 'should provide json exception on json file' do
@@ -65,7 +61,7 @@ describe Bogo::Config do
         Bogo::Config.new(File.join(config_dir, 'config-json'))
       rescue Bogo::Config::FileLoadError => error
       end
-      error.original.must_be_kind_of MultiJson::ParseError
+      _(error.original).must_be_kind_of MultiJson::ParseError
     end
 
     it 'should provide yaml exception on yaml file' do
@@ -74,7 +70,7 @@ describe Bogo::Config do
         Bogo::Config.new(File.join(config_dir, 'config-yaml'))
       rescue Bogo::Config::FileLoadError => error
       end
-      error.original.must_be_kind_of Psych::SyntaxError
+      _(error.original).must_be_kind_of Psych::SyntaxError
     end
 
     it 'should provide xml exception on xml file' do
@@ -83,9 +79,7 @@ describe Bogo::Config do
         Bogo::Config.new(File.join(config_dir, 'config-xml'))
       rescue Bogo::Config::FileLoadError => error
       end
-      error.original.must_be_kind_of MultiXml::ParseError
+      _(error.original).must_be_kind_of MultiXml::ParseError
     end
-
   end
-
 end
