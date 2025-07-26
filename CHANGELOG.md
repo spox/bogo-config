@@ -1,4 +1,5 @@
 # v0.3.2
+* Add support for kernelify on configuration structs (#8)
 
 # v0.3.1
 * Removing redefinition warning (#7)
