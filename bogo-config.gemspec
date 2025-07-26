@@ -14,7 +14,8 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency 'multi_json'
   s.add_runtime_dependency 'multi_xml'
   s.add_runtime_dependency 'attribute_struct'
-  s.add_development_dependency 'minitest'
+  s.add_runtime_dependency 'logger'
+  s.add_development_dependency 'rspec'
   s.add_development_dependency 'rexml'
   s.add_development_dependency 'rake'
   s.files = Dir['lib/**/*'] + %w(bogo-config.gemspec README.md CHANGELOG.md CONTRIBUTING.md LICENSE)
