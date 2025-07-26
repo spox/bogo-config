@@ -10,14 +10,14 @@ describe Bogo::Config do
     let(:config){ @config }
 
     it 'should provide valid config' do
-      _(config.get(:base, :fubar, :feebar)).must_equal true
+      expect(config.get(:base, :fubar, :feebar)).to be_truthy
     end
 
     it 'should merge files in sorted order' do
-      _(config.get(:base, :bang)).must_equal 'boom'
-      _(config.get(:base, :blam)).must_equal false
-      _(config.get(:base, :fubar, :complete)).must_equal 3.0
-      _(config[:last_file]).must_equal true
+      expect(config.get(:base, :bang)).to eq('boom')
+      expect(config.get(:base, :blam)).to be_falsey
+      expect(config.get(:base, :fubar, :complete)).to eq(3.0)
+      expect(config[:last_file]).to be_truthy
     end
 
   end

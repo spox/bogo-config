@@ -1,2 +1,2 @@
 require 'bogo-config'
-require 'minitest/autorun'
+require 'rspec'
