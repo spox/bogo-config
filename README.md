@@ -88,6 +88,45 @@ Configuration.new do
 end
 ```
 
+#### Kernel methods
+
+By default the configuration is loaded within a mostly
+empty context and does not include commonly expected
+methods as defined by the `Kernel` module. There are 
+two ways access these methods:
+
+##### Use root namespace
+
+Accessing methods on the `Kernel` module can be accomplished
+by forcing the root namespace:
+
+``` ruby
+Configuration.new do
+  random_value ::Kernel.rand
+end
+```
+
+##### Load within kernelified struct
+
+Methods from the `Kernel` module can be made available within
+the struct when loading the configuration:
+
+``` ruby
+config = MyConfig.new('/tmp/bogo-config.rb', :kernelify)
+```
+
+This will allow using the `Kernel` module methods directly:
+
+``` ruby
+Configuration.new do
+  random_value rand
+end
+```
+
+__NOTE__: Use caution when using `:kernelify`. Because it 
+makes all methods defined on the `Kernel` module available,
+it may conflict with desired attribute names._
+
 ### Configuration file support
 
 Currently the following serialization types are supported:

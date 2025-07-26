@@ -1,5 +1,6 @@
-require 'bogo-config'
-require 'attribute_struct'
-
-class Configuration < AttributeStruct
+class Configuration
+  attr_reader :block
+  def initialize(&block)
+    @block = block
+  end
 end
