@@ -105,15 +105,18 @@ module Bogo
     attr_reader :path
     # @return [String, Hash]
     attr_reader :initial
+    # @return [TrueClass, FalseClass]
+    attr_reader :kernelify
 
     # Create new instance
     #
     # @param path_or_hash [String, Hash] file/directory path or base Hash
     # @return [self]
-    def initialize(path_or_hash=nil)
+    def initialize(path_or_hash=nil, kernelify=false)
       super()
       @initial = path_or_hash
       @data = Smash.new
+      @kernelify = !!kernelify
       init!
     end
 
@@ -300,7 +303,10 @@ module Bogo
         result = Module.new.instance_eval(
           IO.read(file_path), file_path, 1
         )
-        result._dump.to_smash
+        struct = AttributeStruct.new
+        struct.kernelify! if kernelify
+        struct._build(&result.block)
+        struct._dump.to_smash
       end
     end
 
